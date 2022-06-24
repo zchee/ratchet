@@ -100,6 +100,12 @@ func TestPin(t *testing.T) {
 		"container://ubuntu@sha256:47f14534bda344d9fe6ffd6effb95eefe579f4be0d508b7445cf77f61a0e5724": {
 			Resolved: "ubuntu@sha256:47f14534bda344d9fe6ffd6effb95eefe579f4be0d508b7445cf77f61a0e5724",
 		},
+		"actions://actions/checkout@v3": {
+			Resolved: "actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b",
+		},
+		"actions://actions/setup-go@v3": {
+			Resolved: "actions/setup-go@fcdc43634adb5f7ae75a9d7a9b9361790f7293e2",
+		},
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -197,6 +203,67 @@ jobs:
   my_job:
     steps:
       - uses: 'should_not/resolve@v0' # ratchet:exclude
+`,
+		},
+		{
+			name: "newline",
+			in: `
+name: 'test'
+
+on:
+  push:
+    branches:
+      - 'main'
+  pull_request:
+    branches:
+      - 'main'
+  workflow_dispatch:
+
+concurrency:
+  group: '${{ github.workflow }}-${{ github.head_ref || github.ref }}'
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: 'ubuntu-latest'
+    steps:
+      - uses: 'actions/checkout@v3'
+
+      - uses: 'actions/setup-go@v3'
+        with:
+          go-version: '1.18'
+
+      - run: |-
+          go test -count=1 -shuffle=on -timeout=10m -race ./...
+`,
+			exp: `
+name: 'test'
+
+on:
+  push:
+    branches:
+      - 'main'
+  pull_request:
+    branches:
+      - 'main'
+  workflow_dispatch:
+
+concurrency:
+  group: '${{ github.workflow }}-${{ github.head_ref || github.ref }}'
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: 'ubuntu-latest'
+    steps:
+      - uses: 'actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b' # ratchet:actions/checkout@v3
+
+      - uses: 'actions/setup-go@fcdc43634adb5f7ae75a9d7a9b9361790f7293e2' # ratchet:actions/setup-go@v3
+        with:
+          go-version: '1.18'
+
+      - run: |-
+          go test -count=1 -shuffle=on -timeout=10m -race ./...
 `,
 		},
 	}

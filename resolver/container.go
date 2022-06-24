@@ -13,9 +13,12 @@ import (
 )
 
 func NormalizeContainerRef(in string) string {
-	in = strings.TrimSpace(in)
-	in = strings.TrimPrefix(in, "docker://")
-	return ContainerProtocol + in
+	in2 := strings.TrimSpace(in)
+	if strings.HasSuffix(in2, "\n") {
+		in2 = "\n"
+	}
+	in2 = strings.TrimPrefix(in2, "docker://")
+	return ContainerProtocol + in2
 }
 
 // Container resolves Container registry references.

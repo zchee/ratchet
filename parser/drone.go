@@ -3,6 +3,7 @@ package parser
 import (
 	"fmt"
 
+	"github.com/goccy/go-yaml/ast"
 	"gopkg.in/yaml.v3"
 
 	"github.com/sethvargo/ratchet/resolver"
@@ -11,7 +12,7 @@ import (
 type Drone struct{}
 
 // Parse pulls the Drone Ci refs from the document.
-func (D *Drone) Parse(m *yaml.Node) (*RefsList, error) {
+func (D *Drone) Parse(m *ast.Node) (*RefsList, error) {
 	var refs RefsList
 
 	if m == nil {

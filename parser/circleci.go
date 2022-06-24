@@ -3,6 +3,7 @@ package parser
 import (
 	"fmt"
 
+	"github.com/goccy/go-yaml/ast"
 	"gopkg.in/yaml.v3"
 
 	"github.com/sethvargo/ratchet/resolver"
@@ -13,7 +14,7 @@ type CircleCI struct{}
 // Parse pulls the CircleCI refs from the document. Unfortunately it does not
 // process "orbs" because there is no documented API for resolving orbs to an
 // absolute version.
-func (C *CircleCI) Parse(m *yaml.Node) (*RefsList, error) {
+func (C *CircleCI) Parse(m *ast.Node) (*RefsList, error) {
 	var refs RefsList
 
 	if m == nil {

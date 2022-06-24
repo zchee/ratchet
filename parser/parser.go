@@ -7,6 +7,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/goccy/go-yaml/ast"
 	"github.com/hashicorp/go-multierror"
 	"golang.org/x/sync/semaphore"
 	"gopkg.in/yaml.v3"
@@ -22,15 +23,15 @@ const (
 // Parser defines an interface which parses references out of the given yaml
 // node.
 type Parser interface {
-	Parse(m *yaml.Node) (*RefsList, error)
+	Parse(m *ast.File) (*RefsList, error)
 }
 
 var parserFactory = map[string]func() Parser{
 	"actions":    func() Parser { return new(Actions) },
-	"circleci":   func() Parser { return new(CircleCI) },
-	"cloudbuild": func() Parser { return new(CloudBuild) },
-	"drone":      func() Parser { return new(Drone) },
-	"gitlabci":   func() Parser { return new(GitLabCI) },
+	// "circleci":   func() Parser { return new(CircleCI) },
+	// "cloudbuild": func() Parser { return new(CloudBuild) },
+	// "drone":      func() Parser { return new(Drone) },
+	// "gitlabci":   func() Parser { return new(GitLabCI) },
 }
 
 // For returns the parser that corresponds to the given name.
@@ -55,7 +56,7 @@ func List() []string {
 
 // Check iterates over all references in the yaml and checks if they are pinned
 // to an absolute reference. It ignores "ratchet:exclude" nodes from the lookup.
-func Check(ctx context.Context, parser Parser, m *yaml.Node) error {
+func Check(ctx context.Context, parser Parser, m *ast.File) error {
 	refsList, err := parser.Parse(m)
 	if err != nil {
 		return err
@@ -92,7 +93,7 @@ func Check(ctx context.Context, parser Parser, m *yaml.Node) error {
 
 // Pin extracts all references from the given YAML document and resolves them
 // using the given resolver, updating the associated YAML nodes.
-func Pin(ctx context.Context, res resolver.Resolver, parser Parser, m *yaml.Node, concurrency int64) error {
+func Pin(ctx context.Context, res resolver.Resolver, parser Parser, m *ast.File, concurrency int64) error {
 	refsList, err := parser.Parse(m)
 	if err != nil {
 		return err

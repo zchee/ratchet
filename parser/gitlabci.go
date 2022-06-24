@@ -3,6 +3,7 @@ package parser
 import (
 	"fmt"
 
+	"github.com/goccy/go-yaml/ast"
 	"gopkg.in/yaml.v3"
 
 	"github.com/sethvargo/ratchet/resolver"
@@ -12,9 +13,9 @@ type GitLabCI struct{}
 
 // Parse pulls the image references from GitLab CI configuration files. It does
 // not support references with variables.
-func (C *GitLabCI) Parse(m *yaml.Node) (*RefsList, error) {
+func (C *GitLabCI) Parse(m *ast.Node) (*RefsList, error) {
 	var refs RefsList
-	var imageRef *yaml.Node
+	var imageRef *ast.Node
 
 	// GitLab CI global top level keywords
 	var globalKeywords = map[string]struct{}{

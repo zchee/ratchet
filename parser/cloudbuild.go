@@ -3,6 +3,7 @@ package parser
 import (
 	"fmt"
 
+	"github.com/goccy/go-yaml/ast"
 	"gopkg.in/yaml.v3"
 
 	"github.com/sethvargo/ratchet/resolver"
@@ -11,7 +12,7 @@ import (
 type CloudBuild struct{}
 
 // Parse pulls the Google Cloud Build refs from the document.
-func (c *CloudBuild) Parse(m *yaml.Node) (*RefsList, error) {
+func (c *CloudBuild) Parse(m *ast.Node) (*RefsList, error) {
 	var refs RefsList
 
 	if m == nil {

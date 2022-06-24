@@ -5,15 +5,15 @@ import (
 	"strings"
 	"sync"
 
-	"gopkg.in/yaml.v3"
+	"github.com/goccy/go-yaml/ast"
 )
 
 type RefsList struct {
 	once sync.Once
-	refs map[string][]*yaml.Node
+	refs map[string][]*ast.DocumentNode
 }
 
-func (l *RefsList) Add(ref string, m *yaml.Node) {
+func (l *RefsList) Add(ref string, m *ast.DocumentNode) {
 	l.once.Do(l.init)
 
 	l.refs[ref] = append(l.refs[ref], m)
@@ -30,10 +30,10 @@ func (l *RefsList) Refs() []string {
 	return cp
 }
 
-func (l *RefsList) All() map[string][]*yaml.Node {
+func (l *RefsList) All() map[string][]*ast.DocumentNode {
 	l.once.Do(l.init)
 
-	cp := make(map[string][]*yaml.Node, len(l.refs))
+	cp := make(map[string][]*ast.DocumentNode, len(l.refs))
 	for k, v := range l.refs {
 		cp[k] = append(cp[k], v...)
 	}
@@ -42,7 +42,7 @@ func (l *RefsList) All() map[string][]*yaml.Node {
 
 func (l *RefsList) init() {
 	if l.refs == nil {
-		l.refs = make(map[string][]*yaml.Node)
+		l.refs = make(map[string][]*ast.DocumentNode)
 	}
 }
 
